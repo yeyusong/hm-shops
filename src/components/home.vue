@@ -19,7 +19,8 @@
 				  :unique-opened="true"
 				  :collapse="isCollapse"
 				  :collapse-transition="false"
-				  :router="true">
+				  :router="true"
+				  :default-active="activePath">
 			      <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
 			        <template slot="title">
 			          <i :class="iconsObj[item.id]"></i>
@@ -29,7 +30,8 @@
 					<el-menu-item 
 					:index="'/'+subItem.path" 
 					v-for="subItem in item.children" 
-					:key="subItem.id">
+					:key="subItem.id"
+					@click="saveNavState('/'+subItem.path)">
 						<template slot="title">
 						  <i class="el-icon-menu"></i>
 						  <span>{{subItem.authName}}</span>
@@ -57,11 +59,13 @@
 					'102':'iconfont icon-danju',
 					'145':'iconfont icon-baobiao'
 				},
-				isCollapse:false
+				isCollapse:false,
+				activePath:''
 			}
 		},
 		created() {
 			this.getMenuList()
+			this.activePath = window.sessionStorage.getItem('activePath')
 		},
 		methods:{
 			logout(){
@@ -75,6 +79,10 @@
 			},
 			toggleCollapse(){
 				this.isCollapse = !this.isCollapse
+			},
+			saveNavState(actPath){
+				window.sessionStorage.setItem('activePath',actPath)
+				this.activePath = actPath
 			}
 		}
 	}
