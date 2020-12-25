@@ -43,7 +43,7 @@
 						      <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUser(scope.row.id)"></el-button>
 						</el-tooltip>
 						<el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterbale="false">
-						      <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+						      <el-button type="warning" icon="el-icon-setting" size="mini" @click="setRole(scope.row)"></el-button>
 						</el-tooltip>
 					</template>
 				</el-table-column>
@@ -109,6 +109,31 @@
 		    <el-button type="primary" @click="editUserInfo">确定</el-button>
 		  </span>
 		</el-dialog>
+		<!-- 分配角色 -->
+		<el-dialog
+		  title="分配角色"
+		  :visible.sync="setRoleDialog"
+		  width="50%"
+		  :close-on-click-modal="false">
+		  <div>
+			  <p>当前的用户：{{userinfo.username}}</p>
+			  <p>当前的角色：{{userinfo.role_name}}</p>
+			  <p>分配新角色：
+				<el-select v-model="selectedRoleId" placeholder="请选择">
+				  <el-option
+				    v-for="item in rolesList"
+				    :key="item.id"
+				    :label="item.roleName"
+				    :value="item.id">
+				  </el-option>
+				</el-select>
+			  </p>
+		  </div>
+		  <span slot="footer" class="dialog-footer">
+		    <el-button @click="setRoleDialog = false">取 消</el-button>
+		    <el-button type="primary" @click="setRoleDialog = false">确 定</el-button>
+		  </span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -165,6 +190,7 @@
 					]
 				},
 				editDialogVisible:false,
+				setRoleDialog:false,
 				editForm:{},
 				editFormRules:{
 					email:[
@@ -175,7 +201,10 @@
 						{required:true,message:'请输入手机号',trigger:'blur'},
 						{validator:checkMobile,trigger:'blur'}
 					]
-				}
+				},
+				userinfo:{},
+				rolesList:[],
+				selectedRoleId:''
 			}
 		},
 		created(){
@@ -269,6 +298,17 @@
 						return this.$message.success('删除成功')
 					}
 				}
+			},
+			async setRole(userinfo){
+				this.userinfo = userinfo
+				const {data:res} = await this.$http.get('roles')
+				if(res.meta.status !== 200){
+					return this.$message.error('获取权限列表失败')
+				}else{
+					this.rolesList = res.data
+					this.setRoleDialog = true
+				}
+				
 			}
 		}
 	}
