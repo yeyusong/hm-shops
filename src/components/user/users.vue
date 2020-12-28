@@ -114,6 +114,7 @@
 		  title="分配角色"
 		  :visible.sync="setRoleDialog"
 		  width="50%"
+		  @close="setRoleDialogClose"
 		  :close-on-click-modal="false">
 		  <div>
 			  <p>当前的用户：{{userinfo.username}}</p>
@@ -130,8 +131,8 @@
 			  </p>
 		  </div>
 		  <span slot="footer" class="dialog-footer">
-		    <el-button @click="setRoleDialog = false">取 消</el-button>
-		    <el-button type="primary" @click="setRoleDialog = false">确 定</el-button>
+		    <el-button @click="setRoleDialog = false">取消</el-button>
+		    <el-button type="primary" @click="saveRoleInfo">确定</el-button>
 		  </span>
 		</el-dialog>
 	</div>
@@ -309,6 +310,24 @@
 					this.setRoleDialog = true
 				}
 				
+			},
+			async saveRoleInfo(){
+				if(!this.selectedRoleId){
+					return this.$message.error('请选择要分配的角色')
+				}else{
+					const {data:res} = await this.$http.put(`users/${this.userinfo.id}/role`,{rid:this.selectedRoleId})
+					if(res.meta.status !== 200){
+						return this.$message.error('分配角色失败')
+					}else{
+						this.$message.success('分配角色成功')
+						this.getUserList()
+						this.setRoleDialog = false
+					}
+				}
+			},
+			setRoleDialogClose(){
+				this.selectedRoleId = ''
+				this.userinfo = []
 			}
 		}
 	}
