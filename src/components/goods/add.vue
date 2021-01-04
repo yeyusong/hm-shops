@@ -226,7 +226,7 @@
 						form.attrs = this.addForm.attrs
 						const {data:res} = await this.$http.post('goods',form)
 						if(res.meta.status !== 201){
-							this.$message.error('添加商品失败')
+							return this.$message.error('添加商品失败')
 						}else{
 							this.$message.success('添加商品成功')
 							this.$router.push('/goods')
